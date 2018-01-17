@@ -8,11 +8,11 @@ import android.os.Bundle;
 import com.example.carlosgonzalezramos.agenda.R;
 import com.example.carlosgonzalezramos.agenda.contact.presentator.view.AddContactFragment;
 import com.example.carlosgonzalezramos.agenda.contact.presentator.view.ContactFragment;
-import com.example.carlosgonzalezramos.agenda.main.presentator.presenter.MainInteractorInterface;
+import com.example.carlosgonzalezramos.agenda.main.presentator.presenter.MainInterface;
 import com.example.carlosgonzalezramos.agenda.main.presentator.presenter.MainPresenter;
 
 public class MainActivity extends AppCompatActivity
-        implements MainInteractorInterface.MainView {
+        implements MainInterface.MainView {
 
     public static final String CONTACT_FRAGMENT = "contacts";
     public static final String ADD_CONTACT_FRAGMENT = "add";
@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         MainPresenter presenter = new MainPresenter(this);
+        presenter.init();
 
     }
 

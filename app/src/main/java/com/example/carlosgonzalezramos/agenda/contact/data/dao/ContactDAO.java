@@ -1,9 +1,11 @@
 package com.example.carlosgonzalezramos.agenda.contact.data.dao;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.example.carlosgonzalezramos.agenda.database.DataBase;
 import com.example.carlosgonzalezramos.agenda.database.DataBaseContentProvider;
 import com.example.carlosgonzalezramos.agenda.contact.model.Contact;
 
@@ -36,8 +38,8 @@ public class ContactDAO extends DataBaseContentProvider<Contact>
         return contact;
     }
 
-    public ContactDAO(SQLiteDatabase db) {
-        super(db);
+    public ContactDAO(Context context) {
+        super(DataBase.getInstance(context));
     }
 
 

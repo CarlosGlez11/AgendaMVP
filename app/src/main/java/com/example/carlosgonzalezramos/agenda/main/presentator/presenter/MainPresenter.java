@@ -1,5 +1,6 @@
 package com.example.carlosgonzalezramos.agenda.main.presentator.presenter;
 
+
 import com.example.carlosgonzalezramos.agenda.main.presentator.view.MainActivity;
 
 /**
@@ -8,12 +9,12 @@ import com.example.carlosgonzalezramos.agenda.main.presentator.view.MainActivity
  */
 
 public class MainPresenter
-        implements MainInteractorInterface.MainInteractor{
-    private MainInteractorInterface.MainView mView;
+        implements MainInterface.MainPresenter{
 
-    public MainPresenter(MainInteractorInterface.MainView mView) {
+    private MainInterface.MainView mView;
+
+    public MainPresenter(MainInterface.MainView mView) {
         this.mView = mView;
-        init();
     }
 
     @Override

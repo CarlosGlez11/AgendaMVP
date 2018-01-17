@@ -14,27 +14,27 @@ import android.widget.Toast;
 
 import com.example.carlosgonzalezramos.agenda.R;
 import com.example.carlosgonzalezramos.agenda.contact.data.dao.ContactDAO;
-import com.example.carlosgonzalezramos.agenda.contact.presentator.presenter.ContactInteractorInterface;
+import com.example.carlosgonzalezramos.agenda.contact.presentator.presenter.ContactInteractorImpl;
+import com.example.carlosgonzalezramos.agenda.contact.presentator.presenter.IContact;
 import com.example.carlosgonzalezramos.agenda.contact.presentator.presenter.ContactPresenter;
-import com.example.carlosgonzalezramos.agenda.database.DataBase;
-import com.example.carlosgonzalezramos.agenda.main.presentator.presenter.MainInteractorInterface;
+import com.example.carlosgonzalezramos.agenda.contact.presentator.view.adapter.ContactAdapter;
+import com.example.carlosgonzalezramos.agenda.main.presentator.presenter.MainInterface;
 import com.example.carlosgonzalezramos.agenda.main.presentator.view.MainActivity;
 
 public class ContactFragment extends Fragment
-    implements ContactInteractorInterface.ContactView, View.OnClickListener {
+    implements IContact.IContactView, View.OnClickListener {
 
-
-    private ContactPresenter mPresenter;
     private ContactDAO mContactDAO;
     private ContactAdapter mAdapter;
     private RecyclerView mRecyclerMain;
-    private MainInteractorInterface.MainView mMainView;
+    private ContactPresenter mPresenter;
+    private MainInterface.MainView mMainView;
 
     public ContactFragment() {
         // Required empty public constructor
     }
 
-    public static ContactFragment newInstance(MainInteractorInterface.MainView mainView) {
+    public static ContactFragment newInstance(MainInterface.MainView mainView) {
         ContactFragment fragment = new ContactFragment();
         fragment.mMainView = mainView;
         return fragment;
@@ -49,25 +49,31 @@ public class ContactFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_contact, container, false);
+
         mRecyclerMain = view.findViewById(R.id.rv_contacts);
+        mRecyclerMain.setHasFixedSize(true);
+        mRecyclerMain.setItemAnimator(new DefaultItemAnimator());
+        mRecyclerMain.setLayoutManager(new GridLayoutManager(getContext(), 1));
         view.findViewById(R.id.fab_add).setOnClickListener(this);
-        mContactDAO = new ContactDAO(DataBase.getInstance(getContext()));
-        mPresenter = new ContactPresenter(this);
-        mPresenter.init();
+        setupPresenter();
         return view;
+    }
+
+    private void setupPresenter(){
+        mContactDAO = new ContactDAO(getContext());
+        mPresenter = new ContactPresenter(this, new ContactInteractorImpl());
+        mPresenter.init();
+    }
+
+
+    @Override
+    public void showContacts() {
+        mRecyclerMain.setAdapter(new ContactAdapter(mPresenter));
     }
 
     @Override
     public void refreshRecycler() {
-    }
 
-    @Override
-    public void showContacts() {
-        mRecyclerMain.setHasFixedSize(true);
-        mRecyclerMain.setItemAnimator(new DefaultItemAnimator());
-        mRecyclerMain.setLayoutManager(new GridLayoutManager(getContext(), 1));
-        mRecyclerMain.setAdapter(
-                new ContactAdapter(this, mContactDAO.fetchAllContacts()));
     }
 
     @Override
@@ -93,6 +99,11 @@ public class ContactFragment extends Fragment
     }
 
     @Override
+    public ContactDAO getContactDAO() {
+        return mContactDAO;
+    }
+
+    @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.fab_add:
@@ -100,4 +111,6 @@ public class ContactFragment extends Fragment
                 break;
         }
     }
+
+
 }

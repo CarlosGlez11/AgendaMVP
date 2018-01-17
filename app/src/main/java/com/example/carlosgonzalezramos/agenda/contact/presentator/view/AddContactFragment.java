@@ -11,17 +11,17 @@ import android.widget.EditText;
 import com.example.carlosgonzalezramos.agenda.R;
 import com.example.carlosgonzalezramos.agenda.contact.data.dao.ContactDAO;
 import com.example.carlosgonzalezramos.agenda.contact.model.Contact;
-import com.example.carlosgonzalezramos.agenda.contact.presentator.presenter.AddContactInterface;
-import com.example.carlosgonzalezramos.agenda.contact.presentator.presenter.AddContactPesenter;
-import com.example.carlosgonzalezramos.agenda.database.DataBase;
+import com.example.carlosgonzalezramos.agenda.contact.presentator.presenter.AddContactInteractorImpl;
+import com.example.carlosgonzalezramos.agenda.contact.presentator.presenter.IAddContact;
+import com.example.carlosgonzalezramos.agenda.contact.presentator.presenter.AddContactPesenterImpl;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class AddContactFragment extends Fragment
-    implements AddContactInterface.AddContactView , View.OnClickListener{
+    implements IAddContact.AddContactView, View.OnClickListener{
 
-    private AddContactPesenter mPresenter;
+    private AddContactPesenterImpl mPresenter;
     private ContactDAO mContactDAO;
     private EditText mEtName, mEtBirthday, mEtPhone;
 
@@ -50,29 +50,42 @@ public class AddContactFragment extends Fragment
 
         view.findViewById(R.id.fab_save).setOnClickListener(this);
 
-        mPresenter = new AddContactPesenter(this);
-        mContactDAO = new ContactDAO(DataBase.getInstance(getContext()));
+        mPresenter = new AddContactPesenterImpl(this, new AddContactInteractorImpl());
+        mContactDAO = new ContactDAO(getContext());
         return view;
     }
 
+
+
     @Override
-    public void onNameError() {
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.fab_save:
+                Contact contact = new Contact(mEtName.getText().toString().trim(),
+                        mEtBirthday.getText().toString().trim(),
+                        mEtPhone.getText().toString().trim());
+                mPresenter.checkInfo(contact);
+                break;
+        }
+    }
+
+    @Override
+    public void setNameError() {
         mEtName.setError("Name can not be empty");
     }
 
     @Override
-    public void onPhoneError() {
+    public void setPhoneError() {
         mEtPhone.setError("Phone can not be empty");
     }
 
     @Override
-    public void onBirthdayError() {
+    public void setBirthdayError() {
         mEtBirthday.setError("Birthday can not be empty");
-
     }
 
     @Override
-    public void onSuccessful() {
+    public void setSuccessful() {
         mContactDAO.addContact(new Contact(
                 mEtName.getText().toString().trim(),
                 mEtBirthday.getText().toString().trim(),
@@ -80,19 +93,4 @@ public class AddContactFragment extends Fragment
         getActivity().onBackPressed();
 
     }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.fab_save:
-                mPresenter.checkInfo(
-                        mEtName.getText().toString().trim(),
-                        mEtBirthday.getText().toString().trim(),
-                        mEtPhone.getText().toString().trim());
-                break;
-        }
-    }
-
-
-
 }
